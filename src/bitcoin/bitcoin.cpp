@@ -20,7 +20,7 @@
 			this->host=host;
 			this->port=port;
 			string strport = this->NumberToString(this->port);
-			this->connection=this->user+":"+this->password+"@"+this->host+":"+strport;
+			this->connection="http://"+this->user+":"+this->password+"@"+this->host+":"+strport;
 		}
 
 		//template <typename T>
@@ -40,7 +40,7 @@
 
 		Json::Value bitcoinapi::sendcommand(string command, Json::Value params){
 			Json::Value result;
-			Client c(new HttpClient("http://mmgrant73:mmgrant3672@127.0.0.1:8332"));
+			Client c(new HttpClient(this->connection));
 			 try
 			 {
 				result=c.CallMethod(command, params);
