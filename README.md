@@ -72,3 +72,10 @@ To compile this example program run the following command from the commandline
 g++ getbalance.cpp -lbitcoin -o getbalance
 ```
 Note that this example and a couple more examples are located at bitcoin-cpp/example
+
+Used Libraries:
+---------------
+* jsoncpp (licensed under MIT) jsoncpp is a very easy to use and powerful json library. It is used for all the JSON parsing and generation inside this library. http://jsoncpp.sourceforge.net/
+* curl lib curl is used for the HttpClient connections.
+* libjson-rpc-cpp (licensed under MIT) C++ framework for json-rpc (json remote procedure call).  I use a modify version of this library so that it can run 
+Json-rpc 1.0.  It is design for Json-rpc 2.0. https://github.com/cinemast/libjson-rpc-cpp
