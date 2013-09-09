@@ -49,8 +49,8 @@ int main()
 {	
 	string username="username";       //username for the bitcoin wallet
 	string password="password";       //password for the bitcoin wallet
-	string address="127.0.0.1";   //address to communicate with the bitcoin wallet
-	int port=8332       ;         //port the the bitcoin wallet is listening
+	string address="127.0.0.1";       //address to communicate with the bitcoin wallet
+	int port=8332;                    //port the the bitcoin wallet is listening
 
 //This is the construct to connect to the bitcoin wallet//	
 	bitcoinapi btc(username,password,address,port); 
@@ -58,11 +58,11 @@ int main()
 ///////////////////////getbalance()////////////////////////
 //To get the balance from the bitcoin wallet, you just   //
 //have to call the "getbalance function" and it will     //
-//return an integer value that holds the balance         //
+//return a double value that holds the balance           //
 ///////////////////////////////////////////////////////////
 
 	cout << "getbalance method" << endl;		
-	int b2=btc.getbalance();
+	double b2=btc.getbalance();
 	cout << "Total balance = " << b2 << endl;
 
 }
