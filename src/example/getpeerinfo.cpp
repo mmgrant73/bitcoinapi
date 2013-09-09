@@ -13,7 +13,7 @@ int main()
 	string username="user";       //username for the bitcoin wallet
 	string password="pass";       //password for the bitcoin wallet
 	string address="127.0.0.1";   //address to communicate with the bitcoin wallet
-	int port=8332       ;         //port the the bitcoin wallet is listening
+	int port=8332;                //port the the bitcoin wallet is listening
 
 //This is the construct to connect to the bitcoin wallet//
 	bitcoinapi btc(username,password,address,port);
