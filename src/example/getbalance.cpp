@@ -10,10 +10,10 @@ using namespace std;
 
 int main()
 {	
-	string username="mmgrant73";       //username for the bitcoin wallet
-	string password="mmgrant3672";       //password for the bitcoin wallet
-	string address="127.0.0.1";   //address to communicate with the bitcoin wallet
-	int port=8332       ;         //port the the bitcoin wallet is listening
+	string username="username";       //username for the bitcoin wallet
+	string password="password";       //password for the bitcoin wallet
+	string address="127.0.0.1";       //address to communicate with the bitcoin wallet
+	int port=8332;                    //port the the bitcoin wallet is listening
 
 //This is the construct to connect to the bitcoin wallet//	
 	bitcoinapi btc(username,password,address,port); 
