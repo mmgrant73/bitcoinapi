@@ -11,3 +11,8 @@
 *.lai
 *.la
 *.a
+
+mkdir build
+# Creates a directory for your project called "Hello-World" in your user directory
+
+mkdir src
