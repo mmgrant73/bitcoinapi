@@ -1,0 +1,17 @@
+/*************************************************************************
+ * libbitcoin-cpp
+ *************************************************************************
+ * @file    version.h.in
+ * @date    09.08.2013
+ * @author  Matthew Grant <mmgrant73@yahoo.com>
+ * @license See attached LICENSE.txt
+ ************************************************************************/
+
+#ifndef VERSION_H_
+#define VERSION_H_
+
+#define BITCOIN_CPP_MAJOR_VERSION @MAJOR_VERSION@
+#define BITCOIN_CPP_MINOR_VERSION @MINOR_VERSION@
+
+
+#endif /* VERSION_H_ */
