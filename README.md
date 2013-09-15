@@ -79,3 +79,7 @@ Used Libraries:
 * curl lib curl is used for the HttpClient connections.
 * libjson-rpc-cpp (licensed under MIT) C++ framework for json-rpc (json remote procedure call).  I use a modify version of this library so that it can run 
 Json-rpc 1.0.  It is design for Json-rpc 2.0. https://github.com/cinemast/libjson-rpc-cpp
+
+Change Log: 
+-----------
+* 9/15/13 - Added a derived class from bitcoinapi called litecoinapi.  This class adds support to communicate with the litecoin wallet
