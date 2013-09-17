@@ -80,6 +80,10 @@ Used Libraries:
 * libjson-rpc-cpp (licensed under MIT) C++ framework for json-rpc (json remote procedure call).  I use a modify version of this library so that it can run 
 Json-rpc 1.0.  It is design for Json-rpc 2.0. https://github.com/cinemast/libjson-rpc-cpp
 
+Roadmap for Version 1.1.0
+-------------------------
+* Will make changes to the JSON-RPC library so that it can do both Asynchronous and synchronous communication.  At the moment this library only does synchronous communication.
+
 Change Log: 
 -----------
 * 9/15/13 - Added a derived class from bitcoinapi called litecoinapi.  This class adds support to communicate with the litecoin wallet
