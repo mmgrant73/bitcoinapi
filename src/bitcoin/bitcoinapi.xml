@@ -1,0 +1,1104 @@
+<?xml version="1.0" ?>
+<!DOCTYPE extension SYSTEM "../extension.dtd"> 
+<extension name="bitcoinapi" version="0.1.0">
+ <summary>A PHP extension for communicating with the bitcoin wallet</summary>
+ <description>
+  This PHP extension was design to help PHP developers communicate to the bitcoin wallet using the JSON-RPC.
+ </description>
+<!--<maintainers>
+    <maintainer>
+      <user>mmgrant73</user>
+      <name>Matthew Grant</name>
+      <email>mmgrant73@yahoo.com</email>
+      <access>lead</access>
+    </maintainer>
+  </maintainers> -->
+
+  <license>PHP</license>
+
+ <!-- <channel></channel> -->
+
+  <release>
+    <version>0.1</version>
+    <date>2013-09-15</date>
+    <state>stable</state>
+    <notes>
+     This extention is in the alpha stage
+    </notes>
+  </release>
+
+<!--  <changelog>
+    <release>
+      <version>0.1</version>
+      <date>2013-09-15</date>
+      <state>Alpha</state>
+      <notes>Initial release</notes>
+    <release>
+  </changelog> -->
+
+<!--<logo src="bitcoin.gif" mimetype="image/gif" /> -->
+ <deps language="cpp" platform="all">
+  <lib name="curl"   platform="all" />
+  </deps>
+
+  <class name="bitcoinapi">
+
+<property name="user" access="public"  type="string" value="user"></property>
+<property name="password" access="public"  type="string" value="password"></property>
+<property name="host" access="public"  type="string" value="127.0.0.1"></property>
+<property name="port" access="public"  type="int" value="8332"></property>
+<property name="connection" access="public"  type="string" value="connection"></property>
+
+   <function name="NumberToString" access="public">
+    <proto>string NumberToString (int Number)</proto>
+    <code> <?data
+	ostringstream ss;
+     	ss << Number;
+     	return ss.str();
+	?>
+    </code>
+   </function>
+
+   <function name="StringToNumber" access="public">
+    <proto>int StringToNumber (string Text)</proto>
+    <code> <?data
+	istringstream ss(Text);
+     	int result;
+     	return ss >> result ? result : 0;
+	?>
+    </code>
+   </function>
+
+  <!-- <function name="sendcommand" access="public">
+    <proto>Json::Value sendcommand(string command, Json::Value params)</proto>
+    <code> <?data
+	Json::Value result;
+	Client c(new HttpClient(this->connection));
+	try
+	 {
+		result=c.CallMethod(command, params);
+	 }
+	 catch (JsonRpcException e)
+	 {
+		cerr << e.what() << endl;
+	 }
+	return result;
+	?>
+    </code>
+   </function> -->
+
+   <function name="addnode" access="public">
+    <proto>int addnode(string node, string command)</proto>
+    <code> <?data
+	int res;
+	if(command=="add" || command=="remove" || command=="onetry"){
+		string command="addnode";
+		Json::Value params,result;
+		params.append(node);
+		params.append(command);
+		result=this->sendcommand(command,params);
+		res=0;
+	}
+	else{
+		res=1;
+	}
+	return res;
+	?>
+    </code>
+   </function>
+
+  <function name="getaddednodeinfo" access="public">
+    <proto>void getaddednodeinfo(bool dns, string node)</proto>
+    <code>
+	<?data
+	string command="getaddednodeinfo";
+	Json::Value params,result;
+	params.append(dns);
+	params.append(node);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+	</code>
+   </function>
+
+ <function name="getconnectioncount" access="public">
+    <proto>int getconnectioncount()</proto>
+    <code>
+	<?data
+	string command="getconnectioncount";
+	Json::Value params,result;
+	result=this->sendcommand(command,params);
+	int res=result.asInt();
+	return res;
+	?>
+    </code>
+   </function>
+
+ <function name="getpeerinfo" access="public">
+    <proto>void getpeerinfo()</proto>
+    <code>
+	<?data
+	string command="getpeerinfo";
+	Json::Value params,result;
+	Json::Value r1,r2;
+	string skey,dvalue;
+	result=this->sendcommand(command,params);
+	for( Json::ValueIterator itr = result.begin() ; itr != result.end() ; itr++ ) {
+		Json::Value value = (*itr);
+		peerinfo peerinfo1;
+		peerinfo1.address=value["addr"].asString();
+		peerinfo1.services=value["services"].asString();
+		peerinfo1.lastsend=value["lastsend"].asInt();
+		peerinfo1.lastreceive=value["lastrecv"].asInt();
+		peerinfo1.bytessent=value["bytesent"].asInt();
+		peerinfo1.bytesreceive=value["bytesrecv"].asInt();
+		peerinfo1.connectiontime=value["conntime"].asInt();
+		peerinfo1.version=value["version"].asInt();
+		peerinfo1.subversion=value["subver"].asString();
+		peerinfo1.inbound=value["inbound"].asBool();
+		peerinfo1.startingheight=value["startingheight"].asInt();
+		peerinfo1.banscore=value["banscore"].asInt();
+		peerinfo1.syncnode=value["syncnode"].asBool();
+		this->peerinformation.push_back(peerinfo1);
+	}
+	return;
+	?>
+    </code>
+   </function>   
+
+ <function name="getblock" access="public">
+    <proto>void getblock(string hash)</proto>
+    <code>
+	<?data
+	string command="getblock";
+	Json::Value params;
+	Json::Value result;
+	params.append(hash);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>
+		
+ <function name="getblockcount" access="public">
+    <proto>int getblockcount()</proto>
+    <code>
+	<?data
+	string command="getblockcount";
+	Json::Value params;
+	Json::Value result;
+	result=this->sendcommand(command,params);
+	int res=result.asInt();
+	return res;
+	?>
+    </code>
+   </function>
+		
+ <function name="getblocktemplate" access="public">
+    <proto>void getblocktemplate(string param)</proto>
+    <code>
+	<?data
+	string command="getblocktemplate";
+	Json::Value params;
+	Json::Value result;
+	params.append(param);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>
+	
+ <function name="getblockhash" access="public">
+    <proto>void getblockhash(string index)</proto>
+    <code>
+	<?data
+	string command="getblockhash";
+	Json::Value params;
+	Json::Value result;
+	params.append(index);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>		
+		
+ <function name="getgenerate" access="public">
+    <proto>bool getgenerate()</proto>
+    <code>
+	<?data
+	string command="getgenerate";
+	Json::Value params;
+	Json::Value result;
+	result=this->sendcommand(command,params);
+	bool res=result.asBool();
+	return res;
+	?>
+    </code>
+   </function>
+
+ <function name="getdifficulty" access="public">
+    <proto>double getdifficulty()</proto>
+    <code>
+	<?data
+	string command="getdifficulty";
+	Json::Value params;
+	Json::Value result;
+	result=this->sendcommand(command,params);
+	return result.asDouble();
+	?>
+    </code>
+   </function>
+	
+ <function name="gethashespersec" access="public">
+    <proto>double gethashespersec()</proto>
+    <code>
+	<?data
+	string command="gethashespersec";
+	Json::Value params;
+	Json::Value result;
+	result=this->sendcommand(command,params);
+	return result.asDouble();
+	?>
+    </code>
+   </function>	
+
+ <function name="getmininginfo" access="public">
+    <proto>void getmininginfo()</proto>
+    <code>
+	<?data
+	string command="getmininginfo";
+	Json::Value params;
+	Json::Value result;
+	result=this->sendcommand(command,params);
+	Json::Value b=result["blocks"];
+	Json::Value cbs=result["currentblocksize"];
+	Json::Value cbt=result["currentblocktx"];
+	Json::Value d=result["difficulty"];
+	Json::Value e=result["errors"];
+	Json::Value g=result["genproclimit"];
+	Json::Value h=result["hashespersec"];
+	Json::Value p=result["polledtx"];
+	Json::Value t=result["testnet"];
+	Json::Value g1=result["generate"];
+	receivedbyaccount listaccount;
+	this->mining.blocks= b.asInt();
+	this->mining.currentblocksize= cbs.asInt();
+	this->mining.currentblocktx=cbt.asInt();
+	this->mining.difficulty=d.asDouble();
+	this->mining.errors=e.asString();
+	this->mining.generate=g1.asBool();
+	this->mining.genproclimit=g.asInt();
+	this->mining.hashespersec=h.asDouble();
+	this->mining.pooledtx=p.asInt();
+	this->mining.testnet=t.asBool();
+	return;
+	?>
+    </code>
+   </function>	
+
+ <function name="getwork" access="public">
+    <proto>void getwork(string data)</proto>
+    <code>
+	<?data
+	string command="getwork";
+	Json::Value params;
+	Json::Value result;
+	params.append(data);
+	result=this->sendcommand(command,params);			
+	return;
+	?>
+    </code>
+   </function>
+
+ <function name="setgenerate" access="public">
+    <proto>void setgenerate(bool generate)</proto>
+    <code>
+	<?data
+	string command="setgenerate";
+	Json::Value params;
+	Json::Value result;
+	params.append(generate);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>
+
+ <function name="backupwallet" access="public">
+    <proto>void backupwallet(string destination)</proto>
+    <code>
+	<?data
+	string command="backupwallet";
+	Json::Value params;
+	Json::Value result;
+	params.append(destination);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>
+
+ <function name="encryptwallet" access="public">
+    <proto>void encryptwallet(string paraphase)</proto>
+    <code>
+	<?data
+	string command="encryptwallet";
+	Json::Value params;
+	Json::Value result;
+	params.append(paraphase);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>	
+
+ <function name="getinfo" access="public">
+    <proto>void getinfo()</proto>
+    <code>
+	<?data
+	string command="getinfo";
+	Json::Value params;
+	Json::Value result;
+	result=this->sendcommand(command,params);
+	this->generalinfo.balance=result["balance"].asDouble();
+	this->generalinfo.blocks=result["blocks"].asInt();
+	this->generalinfo.connections=result["connections"].asInt();
+	this->generalinfo.difficulty=result["difficulty"].asDouble();
+	this->generalinfo.errors=result["errors"].asString();
+	this->generalinfo.keypoololdest=result["keypoololdest"].asInt();
+	this->generalinfo.keypoolsize=result["keypoolsize"].asInt();
+	this->generalinfo.paytxfee=result["paytxfee"].asDouble();
+	this->generalinfo.protocolversion=result["protocolversion"].asInt();
+	this->generalinfo.proxy=result["proxy"].asString();
+	this->generalinfo.testnet=result["testnet"].asBool();
+	this->generalinfo.timeoffset=result["timeoffset"].asInt();
+	this->generalinfo.version=result["version"].asInt();
+	this->generalinfo.walletversion=result["walletversion"].asInt();
+	return;
+	?>
+    </code>
+   </function>
+
+ <function name="getversion" access="public">
+    <proto>int getversion()</proto>
+    <code>
+	<?data
+	this->getinfo();
+	return this->generalinfo.version;
+	?>
+    </code>
+   </function>
+		
+ <function name="getprotocolversion" access="public">
+    <proto>int getprotocolversion()</proto>
+    <code>
+	<?data
+	this->getinfo();
+	return this->generalinfo.protocolversion;
+	?>
+    </code>
+   </function>	
+
+ <function name="getwalletversion" access="public">
+    <proto>int getwalletversion()</proto>
+    <code>
+	<?data
+	this->getinfo();
+	return this->generalinfo.walletversion;
+	?>
+    </code>
+   </function>		
+		
+ <function name="stop" access="public">
+    <proto>void stop()</proto>
+    <code>
+	<?data
+	string command="stop";
+	Json::Value params;
+	Json::Value result;
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>	
+
+ <function name="addmultisigaddress" access="public">
+    <proto>void addmultisigaddress(string required, string key, string account)</proto>
+    <code>
+	<?data
+	string command="addmultisigaddress";
+	Json::Value params;
+	Json::Value result;
+	params.append(required);
+	params.append(key);
+	params.append(account);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>	
+		
+ <function name="createmultisig" access="public">
+    <proto>void createmultisig(string required, string key)</proto>
+    <code>
+	<?data
+	string command="createmultisig";
+	Json::Value params;
+	Json::Value result;
+	params.append(required);
+	params.append(key);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>	
+
+ <function name="dumpprivkey" access="public">
+    <proto>string dumpprivkey(string bitcoinaddress)</proto>
+    <code>
+	<?data
+	string command="dumpprivkey";
+	Json::Value params;
+	Json::Value result;
+	params.append(bitcoinaddress);
+	result=this->sendcommand(command,params);
+	return result["privkey"].asString();
+	?>
+    </code>
+   </function>		
+		
+ <function name="importprivkey" access="public">
+    <proto>void importprivkey(string privatekey, string label, bool rescan)</proto>
+    <code>
+	<?data
+	string command="importprivkey";
+	Json::Value params;
+	Json::Value result;
+	params.append(privatekey);
+	params.append(label);
+	params.append(rescan);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>
+		
+ <function name="keypoolrefill" access="public">
+    <proto>void keypoolrefill()</proto>
+    <code>
+	<?data
+	string command="keypoolrefill";
+	Json::Value params;
+	Json::Value result;
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>
+	
+ <function name="verifymessage" access="public">
+    <proto>void verifymessage(string bitcoinaddress, string signature, string message)</proto>
+    <code>
+	<?data
+	string command="verifymessage";
+	Json::Value params;
+	Json::Value result;
+	params.append(bitcoinaddress);
+	params.append(signature);
+	params.append(message);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>
+		
+ <function name="signmessage" access="public">
+    <proto>void signmessage(string bitcoinaddress, string message)</proto>
+    <code>
+	<?data
+	string command="signmessage";
+	Json::Value params;
+	Json::Value result;
+	params.append(bitcoinaddress);
+	params.append(message);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>
+		
+ <function name="walletlock" access="public">
+    <proto>void walletlock()</proto>
+    <code>
+	<?data
+	string command="walletlock";
+	Json::Value params;
+	Json::Value result;
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>
+
+ <function name="walletpassphrase" access="public">
+    <proto>void walletpassphrase(string passphase, int timeout)</proto>
+    <code>
+	<?data
+	string command="walletpassphase";
+	Json::Value params;
+	Json::Value result;
+	params.append(passphase);
+	params.append(timeout);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>	
+
+ <function name="walletpassphrasechange" access="public">
+    <proto>void walletpassphrasechange(string oldpassphase, string newpassphase)</proto>
+    <code>
+	<?data
+	string command="walletpassphasechange";
+	Json::Value params;
+	Json::Value result;
+	params.append(oldpassphase);
+	params.append(newpassphase);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>	
+		
+ <function name="getaccount" access="public">
+    <proto>string getaccount(string bitcoinaddress)</proto>
+    <code>
+	<?data
+	string command="getaccount";
+	Json::Value params;
+	Json::Value result;
+	params.append(bitcoinaddress);
+	result=this->sendcommand(command,params);
+	string account=result.asString();
+	return account;
+	?>
+    </code>
+   </function>
+
+ <function name="getaccountaddress" access="public">
+    <proto>string getaccountaddress(string account)</proto>
+    <code>
+	<?data
+	string command="getaccountaddress";
+	Json::Value params;
+	Json::Value result;
+	params.append(account);
+	result=this->sendcommand(command,params);
+	string bitcoinaddress=result.asString();
+	return bitcoinaddress;
+	?>
+    </code>
+   </function>
+
+ <function name="getaddressesbyaccount" access="public">
+    <proto>void getaddressesbyaccount(string account)</proto>
+    <code>
+	<?data
+	string command="getaddressesbyaccount";
+	Json::Value params;
+	Json::Value result;
+	params.append(account);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>		
+		
+ <function name="getaccountbalance" access="public">
+    <proto>double getaccountbalance(string account)</proto>
+    <code>
+	<?data
+	string command="getbalance";
+	Json::Value params;
+	Json::Value result;
+	params.append(account);
+	result=this->sendcommand(command,params);
+	double balance=result.asDouble();
+	return balance;
+	?>
+    </code>
+   </function>	
+
+ <function name="getbalance" access="public">
+    <proto>double getbalance()</proto>
+    <code>
+	<?data
+	this->getinfo();
+	return this->generalinfo.balance;
+	?>
+    </code>
+   </function>	
+
+ <function name="getnewaddress" access="public">
+    <proto>string getnewaddress(string account)</proto>
+    <code>
+	<?data
+	string command="getaccount";
+	Json::Value params;
+	Json::Value result;
+	params.append(account);
+	result=this->sendcommand(command,params);
+	string bitcoinaddress=result.asString();
+	return bitcoinaddress;
+	?>
+    </code>
+   </function>
+		
+<!-- <function name="getreceivedbyaccount" access="public">
+    <proto>double getreceivedbyaccount(string account)</proto>
+    <code>
+	<?data
+	string command="getreceivedbyaccount";
+	Json::Value params;
+	Json::Value result;
+	params.append(account);
+	result=this->sendcommand(command,params);
+	double balance=result.asDouble();
+	return balance;
+	?>
+    </code>
+   </function>	
+		
+ <function name="getreceivedbyaddress" access="public">
+    <proto>double getreceivedbyaddress(string bitcoinaddress)</proto>
+    <code>
+	<?data
+	string command="getreceivedbyaddress";
+	Json::Value params;
+	Json::Value result;
+	params.append(bitcoinaddress);
+	result=this->sendcommand(command,params);
+	double balance=result.asDouble();
+	return balance;
+	?>
+    </code>
+   </function>	-->
+
+ <function name="gettransaction" access="public">
+    <proto>void gettransaction(string tx)</proto>
+    <code>
+	<?data
+	string command="gettransaction";
+	Json::Value params;
+	Json::Value result;
+	params.append(tx);
+	result=this->sendcommand(command,params);
+	Json::Value txid1=result["txid"];
+	Json::Value confirmation1=result["confirmation"];
+	Json::Value amount1=result["amount"];
+	Json::Value fee1=result["fee"];
+	Json::Value account1=result["account"];
+	Json::Value address1=result["address"];
+	Json::Value category1=result["category"];
+	this->transaction.txid=txid1.asString();
+	this->transaction.confirmation=confirmation1.asInt();
+	this->transaction.amount=amount1.asDouble();
+	this->transaction.fee=fee1.asDouble();
+	this->transaction.account=account1.asString();
+	this->transaction.address=address1.asString();
+	this->transaction.category=category1.asString();
+	return;
+	?>
+    </code>
+   </function>
+		
+ <function name="listaccounts" access="public">
+    <proto>void listaccounts()</proto>
+    <code>
+	<?data
+	string command="listaccounts";
+	Json::Value params;
+	Json::Value result;
+	Json::Value r1,r2;
+	string skey;
+	double dvalue;
+	result=this->sendcommand(command,params);
+	for( Json::ValueIterator itr = result.begin() ; itr != result.end() ; itr++ ) {
+		Json::Value value = (*itr);
+		accounts accounts1;
+		r1=itr.key();
+		skey=r1.asString();
+		r2=result[skey];
+		dvalue=r2.asDouble();
+		accounts1.account=skey;
+		accounts1.amount=dvalue;
+		this->accountlist.push_back(accounts1);
+	}
+	?>
+    </code>
+   </function>
+
+ <function name="listreceivedbyaccount" access="public">
+    <proto>void listreceivedbyaccount()</proto>
+    <code>
+	<?data
+	string command="listreceivedbyaccount";
+	Json::Value params,result;
+	for( Json::ValueIterator itr = result.begin() ; itr != result.end() ; itr++ ) {
+		Json::Value value = (*itr);
+		receivedbyaccount listaccount;
+		listaccount.account=value["account"].asString();
+		listaccount.amount=value["amount"].asDouble();
+		listaccount.confirmations=value["confirmations"].asInt();
+		this->receivedaccountlist.push_back(listaccount);;
+	}
+	return;
+	?>
+    </code>
+   </function>	
+
+ <function name="listreceivedbyaddress" access="public">
+    <proto>void listreceivedbyaddress()</proto>
+    <code>
+	<?data
+	string command="listreceivedbyaddress";
+	Json::Value params,result;
+	for( Json::ValueIterator itr = result.begin() ; itr != result.end() ; itr++ ) {
+		receivedbyaddress listaccount;
+		listaccount.address=result["address"].asString();
+		listaccount.account=result["account"].asString();
+		listaccount.amount=result["amount"].asDouble();
+		listaccount.confirmations=result["confirmations"].asInt();
+		this->receivedaddresslist.push_back(listaccount);
+	}
+	return;
+	?>
+    </code>
+   </function>	
+
+ <function name="listtransactions" access="public">
+    <proto>void listtransactions(string account, int count, int start)</proto>
+    <code>
+	<?data
+	string command="listtransactions";
+	Json::Value params,result;
+	for( Json::ValueIterator itr = result.begin() ; itr != result.end() ; itr++ ) {
+		listtransaction listtrans;
+		listtrans.txid=result["txid"].asString();
+		listtrans.address=result["address"].asString();
+		listtrans.account=result["account"].asString();
+		listtrans.amount=result["amount"].asDouble();
+		listtrans.confirmations=result["confirmations"].asInt();
+	        listtrans.fee=result["fee"].asDouble();
+		this->transactionlist.push_back(listtrans);
+	}
+	return;
+	?>
+    </code>
+   </function>		
+		
+ <function name="listsinceblock" access="public">
+    <proto>void listsinceblock(string hash)</proto>
+    <code>
+	<?data
+	string command="listsinceblock";
+	Json::Value params,result;
+	params.append(hash);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>		
+		
+ <function name="move" access="public">
+    <proto>void move(string toaccount, string fromaccount, float amount, string comment)</proto>
+    <code>
+	<?data
+	string command="move";
+	Json::Value params,result;
+	params.append(toaccount);
+	params.append(fromaccount);
+	params.append(amount);
+	params.append(comment);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>	
+
+ <function name="sendfrom" access="public">
+    <proto>void sendfrom(string account, string bitcoinaddress, float amount, string comment, string to_comment)</proto>
+    <code>
+	<?data
+	string command="sendfrom";
+	Json::Value params,result;
+	params.append(account);
+	params.append(bitcoinaddress);
+	params.append(amount);
+	params.append(comment);
+	params.append(to_comment);
+	result=this->sendcommand(command,params);
+	return;;
+	?>
+    </code>
+   </function>	
+		
+ <function name="sendtoaddress" access="public">
+    <proto>void sendtoaddress(string bitcoinaddress, float amount, string comment, string to_comment)</proto>
+    <code>
+	<?data
+	string command="sendtoaddress";
+	Json::Value params,result;
+	params.append(bitcoinaddress);
+	params.append(amount);
+	params.append(comment);
+	params.append(to_comment);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>
+
+ <function name="setaccount" access="public">
+    <proto>void setaccount(string bitcoinaddress, string account)</proto>
+    <code>
+	<?data
+	string command="setaccount";
+	Json::Value params, result;
+	params.append(bitcoinaddress);
+	params.append(account);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>
+		
+ <function name="settxfee" access="public">
+    <proto>void settxfee(double amount)</proto>
+    <code>
+	<?data
+	string command="settxfee";
+	Json::Value params,result;
+	params.append(amount);;
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>	
+
+ <function name="validateaddress" access="public">
+    <proto>void validateaddress(string bitcoinaddress)</proto>
+    <code>
+	<?data
+	string command="validateaddress";
+	Json::Value params;
+	Json::Value result;
+	params.append(bitcoinaddress);
+	result=this->sendcommand(command,params);
+	this->addressinfo.account=result["account"].asString();
+	this->addressinfo.address=result["address"].asString();
+	this->addressinfo.iscompressed=result["iscompressed"].asBool();
+	this->addressinfo.ismine=result["ismine"].asBool();
+	this->addressinfo.isscript=result["isscript"].asBool();
+	this->addressinfo.isvalid=result["isvalid"].asBool();
+	this->addressinfo.pubkey=result["pubkey"].asString();
+	return;
+	?>
+    </code>
+   </function>
+
+ <function name="isvalidateaddress" access="public">
+    <proto>bool isvalidateaddress(string bitcoinaddress)</proto>
+    <code>
+	<?data
+	this->validateaddress(bitcoinaddress);
+	return this->addressinfo.isvalid;
+	?>
+    </code>
+   </function>
+		
+ <function name="isitmyaddress" access="public">
+    <proto>bool isitmyaddress(string bitcoinaddress)</proto>
+    <code>
+	<?data
+	this->validateaddress(bitcoinaddress);
+	return this->addressinfo.ismine;
+	?>
+    </code>
+   </function>		
+		
+ <function name="listunspent" access="public">
+    <proto>void listunspent(int confirmationmin, int confirmationmax)</proto>
+    <code>
+	<?data
+	string command="listunspent";
+	Json::Value params;
+	Json::Value result;
+	params.append(confirmationmin);
+	params.append(confirmationmax);
+	result=this->sendcommand(command,params);
+		for( Json::ValueIterator itr = result.begin() ; itr != result.end() ; itr++ ) {
+			unspent unspent1;
+			unspent1.txid=result["txid"].asString();
+			unspent1.output=result["output"].asString();
+			unspent1.scriptPubKey=result["scriptPubKey"].asString();
+			unspent1.amount=result["amount"].asDouble();
+			unspent1.confirmations=result["confirmations"].asInt();
+			this->unspentlist.push_back(unspent1);
+		}
+	return;();
+	?>
+    </code>
+   </function>
+
+ <function name="lockunspent" access="public">
+    <proto>void lockunspent(string txid, bool lock)</proto>
+    <code>
+	<?data
+	string command="lockunspent";
+	Json::Value params;
+	Json::Value result;
+	params.append(txid);
+	params.append(lock);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>		
+		
+ <function name="listlockunspent" access="public">
+    <proto>void listlockunspent()</proto>
+    <code>
+	<?data
+	string command="listlockunspent";
+	Json::Value params;
+	Json::Value result;
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>		
+
+ <function name="createrawtransaction" access="public">
+    <proto>void createrawtransaction(string txid, bool lock1, string address, double amount)</proto>
+    <code>
+	<?data
+	string command="createrawtransaction";
+	Json::Value params;
+	Json::Value result;
+	params.append(txid);
+	params.append(lock1);
+	params.append(address);
+	params.append(amount);
+	result=this->sendcommand(command,params);
+	return
+	?>
+   </code>
+   </function>
+		
+ <function name="decoderawtransaction" access="public">
+    <proto>void decoderawtransaction(string hexstring)</proto>
+    <code>
+	<?data
+	string command="decoderawtransaction";
+	Json::Value params;
+	Json::Value result;
+	params.append(hexstring);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>	
+
+ <function name="getrawtransaction" access="public">
+    <proto>void getrawtransaction(string txid)</proto>
+    <code>
+	<?data
+	string command="getrawtransaction";
+	Json::Value params;
+	Json::Value result;
+	params.append(txid);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>		
+
+ <function name="signrawtransaction" access="public">
+    <proto>void signrawtransaction(string hexstring, string txid, bool lock, string pubkey, string privatekey, string sighash)</proto>
+    <code>
+	<?data
+	string command="signrawtransaction";
+	Json::Value params;
+	Json::Value result;
+	params.append(hexstring);
+	params.append(txid);
+	params.append(lock);
+	params.append(pubkey);
+	params.append(privatekey);
+	params.append(sighash);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>
+
+ <function name="sendrawtransaction" access="public">
+    <proto>void sendrawtransaction(string hexstring)</proto>
+    <code>
+	<?data
+	string command="signrawtransaction";
+	Json::Value params;
+	Json::Value result;
+	params.append(hexstring);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>
+
+ <function name="getrawmempool" access="public">
+    <proto>void getrawmempool()</proto>
+    <code>
+	<?data
+	string command="getrawmempool";
+	Json::Value params;
+	Json::Value result;
+	result=this->sendcommand(command,params);
+	cout << "rawmempool=" << result << endl;
+	return;
+	?>
+    </code>
+   </function>		
+			
+ <function name="gettxout" access="public">
+    <proto>void gettxout(string txid, int n, bool includemempool)</proto>
+    <code>
+	<?data
+	string command="gettxout";
+	Json::Value params;
+	Json::Value result;
+	params.append(txid);
+	params.append(n);
+	params.append(includemempool);
+	result=this->sendcommand(command,params);
+	return;
+	?>
+   </code>
+   </function>		
+		
+ <function name="gettxoutsetinfo" access="public">
+    <proto>void gettxoutsetinfo()</proto>
+    <code>
+	<?data
+	string command="gettxoutsetinfo";
+	Json::Value params;
+	Json::Value result;
+	result=this->sendcommand(command,params);
+	return;
+	?>
+    </code>
+   </function>		
+		
+
+  </class>

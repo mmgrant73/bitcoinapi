@@ -7,8 +7,9 @@
 
 //#include "bitcoin.h"
 //#include "bitcoin.cpp"
-#include "litecoin.h"
-//using namespace std;
+//#include <bitcoin/bitcoin.h>
+#include <bitcoin/litecoin.h>
+using namespace std;
 
 int main()
 {	

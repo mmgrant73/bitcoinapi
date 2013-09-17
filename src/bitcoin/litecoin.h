@@ -1,7 +1,7 @@
 #include <jsonrpc/rpc.h>
 #include <iostream>
 #include <string.h>
-#include "bitcoin.cpp"
+#include "bitcoin.h"
 
 using namespace jsonrpc;
 using namespace std;

@@ -7,15 +7,14 @@
 
 #include "litecoin.h"
 
-		litecoinapi::litecoinapi(string user, string password, string host, int port):bitcoinapi(user, password, host, port){
+		//litecoinapi::litecoinapi(string user, string password, string host, int port):bitcoinapi(user, password, host, port){
 			
-		}
+		//}
 
-		string litecoinapi::getnetworkhashps(){
+		int litecoinapi::getnetworkhashps(){
 			string command="getnetworkhashps()";
 			Json::Value params;
 			Json::Value result;
-			params.append(account);
 			result=this->sendcommand(command,params);
 			int hashps=result.asInt();
 			return hashps;

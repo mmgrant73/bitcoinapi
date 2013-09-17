@@ -12,3 +12,6 @@ target_link_libraries(getpeerinfo bitcoin)
 
 add_executable(getnewaddress getnewaddress.cpp)
 target_link_libraries(getnewaddress bitcoin)
+
+add_executable(getdifficulty getdifficulty.cpp)
+target_link_libraries(getdifficulty bitcoin)
