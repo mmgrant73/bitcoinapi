@@ -83,6 +83,7 @@ Json-rpc 1.0.  It is design for Json-rpc 2.0. https://github.com/cinemast/libjso
 Roadmap for Version 1.1.0
 -------------------------
 * Will make changes to the JSON-RPC library so that it can do both Asynchronous and synchronous communication.  At the moment this library only does synchronous communication.
+* Add a caching layer so that it increase performance and lessen the network traffic
 
 Change Log: 
 -----------
